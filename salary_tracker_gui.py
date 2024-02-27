@@ -13,7 +13,7 @@ total number of sunday working hours, gross salary and after tax income.
 
 import tkinter as tk
 from tkinter import messagebox
-from salary_tracker import annual_income, WorkDay
+from salary_tracker import annual_income, WorkDay, read_input_file, WorkMonth
 
 
 class SalaryTrackerApp:
@@ -90,7 +90,7 @@ class SalaryTrackerApp:
 
         # Append the data to the input file
         with open("input.txt", "a") as f:
-            f.write(f"\n{data}")
+            f.write(f"{data}")
 
         # Display a confirmation message
         tk.messagebox.showinfo("Success", "Data Updated Successfully!")
@@ -123,6 +123,16 @@ class SalaryTrackerApp:
         except ValueError:
             tk.messagebox.showerror("Error", "Invalid month. Please enter a number between 1 and 12.")
             return
+        
+        # Reload data from input file
+        global annual_income
+        annual_income = {}
+        days = read_input_file("input.txt")
+        for day in days:
+            month = day.date.month
+            if month not in annual_income:
+                annual_income[month] = WorkMonth(month)
+            annual_income[month].add_day(day)
 
         # Check if data exists for the specified month
         if month not in annual_income:
